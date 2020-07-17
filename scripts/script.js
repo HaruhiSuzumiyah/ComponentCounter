@@ -36,17 +36,37 @@ function readChatbox() {
   var chat = "";
 
   for (a in opts) {
-    chat += opts[a].text + " ";
-  }
+    var chatRecent = false;
+    console.log(opts);
+    chat = opts[a].text;
+  
 
   var comps = chat.match(
     /\d+ x \w+( \w+)?[^\d+:]|You receive \d+ \w+( \w+)?[^\d+:]/g
   );
+ 
+    chatRecent = recentList.includes(chat);
+
+    //console.log(chat);
+
+    //console.log("IS THIS CHAT RECENT: " + chatRecent);
+
+  if (comps != null && comps.length > -1 && !(chatRecent)) {
+
+    recentList.push(chat);
+    recentList.shift();
+    //console.log("RECENT LIST:")
+    //console.log(recentList);
+  };
+  
+if(!chatRecent){
   if (comps != null && comps.length > -1) actions++;
   for (var x in comps) {
-    console.log("HERE IS THE COMPONENT");
-    console.log(x);
-    recentList.push(x);
+    //console.log(chat);
+    //console.log(comps);
+    //console.log("HERE IS THE COMPONENT");
+    //console.log(x);
+    //recentList.push(x);
     //console.log(recentList);
     count = Number(comps[x].match(/\d+/)); //1
     mats = comps[x].match(/[^You receive \d]\w+( \w+)?/)[0]; //Junk
@@ -59,6 +79,8 @@ function readChatbox() {
       continue;
     }
   }
+  }
+}
 }
 
 function buildTable() {
