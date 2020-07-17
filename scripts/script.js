@@ -12,7 +12,7 @@ reader.readargs = {
 reader.find(); //Find the chat box.
 reader.read(); //Get the initial read, to not report on initial load.
 
-var recentList = new Array(20);
+var recentList = new Array(200);
 
 //Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
 try {
