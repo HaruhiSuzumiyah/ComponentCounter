@@ -44,9 +44,10 @@ function readChatbox() {
   );
   if (comps != null && comps.length > -1) actions++;
   for (var x in comps) {
+    console.log("HERE IS THE COMPONENT");
     console.log(x);
     recentList.push(x);
-    console.log(recentList);
+    //console.log(recentList);
     count = Number(comps[x].match(/\d+/)); //1
     mats = comps[x].match(/[^You receive \d]\w+( \w+)?/)[0]; //Junk
     if (!mats.match(/parts|components|Junk/)) mats += "s";
