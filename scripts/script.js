@@ -12,6 +12,8 @@ reader.readargs = {
 reader.find(); //Find the chat box.
 reader.read(); //Get the initial read, to not report on initial load.
 
+var recentList = new Array(20);
+
 //Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
 try {
   var p = reader.pos;
@@ -42,6 +44,8 @@ function readChatbox() {
   );
   if (comps != null && comps.length > -1) actions++;
   for (var x in comps) {
+    recentList.push(x)
+    console.log(recentList)
     count = Number(comps[x].match(/\d+/)); //1
     mats = comps[x].match(/[^You receive \d]\w+( \w+)?/)[0]; //Junk
     if (!mats.match(/parts|components|Junk/)) mats += "s";
