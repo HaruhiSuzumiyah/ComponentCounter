@@ -12,7 +12,7 @@ reader.readargs = {
 reader.find(); //Find the chat box.
 reader.read(); //Get the initial read, to not report on initial load.
 
-var recentList = new Array(200);
+var recentList = new Array(1000);
 
 //Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
 try {
@@ -26,7 +26,7 @@ try {
     2000,
     1
   );
-} catch {}
+} catch { }
 
 var count, mats, index;
 var actions = 0;
@@ -34,53 +34,46 @@ var actions = 0;
 function readChatbox() {
   var opts = reader.read() || [];
   var chat = "";
+  var tempRecents = [];
 
   for (a in opts) {
     var chatRecent = false;
-    console.log(opts);
     chat = opts[a].text;
-  
 
-  var comps = chat.match(
-    /\d+ x \w+( \w+)?[^\d+:]|You receive \d+ \w+( \w+)?[^\d+:]/g
-  );
- 
-    chatRecent = recentList.includes(chat);
 
-    //console.log(chat);
+    var comps = chat.match(
+      /\d+ x \w+( \w+)?[^\d+:]|You receive \d+ \w+( \w+)?[^\d+:]/g
+    );
 
-    //console.log("IS THIS CHAT RECENT: " + chatRecent);
+    chatRecent = recentList.includes(chat) || tempRecents.includes(chat);
 
-  if (comps != null && comps.length > -1 && !(chatRecent)) {
+    if (comps != null && comps.length > -1 && !(chatRecent)) {
+      tempRecents.push(chat);
+    };
 
-    recentList.push(chat);
-    recentList.shift();
-    //console.log("RECENT LIST:")
-    //console.log(recentList);
-  };
-  
-if(!chatRecent){
-  if (comps != null && comps.length > -1) actions++;
-  for (var x in comps) {
-    //console.log(chat);
-    //console.log(comps);
-    //console.log("HERE IS THE COMPONENT");
-    //console.log(x);
-    //recentList.push(x);
-    //console.log(recentList);
-    count = Number(comps[x].match(/\d+/)); //1
-    mats = comps[x].match(/[^You receive \d]\w+( \w+)?/)[0]; //Junk
-    if (!mats.match(/parts|components|Junk/)) mats += "s";
-    if (compsList[mats]) {
-      compsList[mats].qty += count; //add count to index of second list.
-      tidyTable(mats);
-    } else {
-      console.warn("Invalid component.  Ignoring.");
-      continue;
+    if (!chatRecent) {
+      if (comps != null && comps.length > -1) actions++;
+      for (var x in comps) {
+        count = Number(comps[x].match(/\d+/)); //1
+        mats = comps[x].match(/[^You receive \d]\w+( \w+)?/)[0]; //Junk
+        if (!mats.match(/parts|components|Junk/)) mats += "s";
+        if (compsList[mats]) {
+          compsList[mats].qty += count; //add count to index of second list.
+          tidyTable(mats);
+        } else {
+          console.warn("Invalid component.  Ignoring.");
+          continue;
+        }
+      }
     }
   }
+
+  // save recents in a temp list per chunk of chat data we receive.
+  // Purpose is to catch edge case where we receive two of the same components in the same game tick
+  for (i in tempRecents) {
+    recentList.push(tempRecents[i]);
+    recentList.shift();
   }
-}
 }
 
 function buildTable() {
@@ -88,28 +81,28 @@ function buildTable() {
     if (compsList[x].type === "ancient") {
       $(".ancient").append(
         `<tr data-name="${x}"><td>${
-          x.split(" ")[0]
+        x.split(" ")[0]
         }</td><td class='qty'></td></tr>`
       );
     }
     if (compsList[x].type === "rare") {
       $(".rare").append(
         `<tr data-name="${x}"><td>${
-          x.split(" ")[0]
+        x.split(" ")[0]
         }</td><td class='qty'></td></tr>`
       );
     }
     if (compsList[x].type === "uncommon") {
       $(".uncommon").append(
         `<tr data-name="${x}"><td>${
-          x.split(" ")[0]
+        x.split(" ")[0]
         }</td><td class='qty'></td></tr>`
       );
     }
     if (compsList[x].type === "common") {
       $(".common").append(
         `<tr data-name="${x}"><td>${
-          x.split(" ")[0]
+        x.split(" ")[0]
         }</td><td class='qty'></td></tr>`
       );
     }
